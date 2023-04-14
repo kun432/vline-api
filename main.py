@@ -61,9 +61,9 @@ async def check_vline(place, order):
         final_diff = max_pos - place
 
         if final_diff >= 2 and max_down >= 2:
-            return PlainTextResponse(content="Vライン馬")
+            return PlainTextResponse(content="1")
         else:
-            return PlainTextResponse(content="")
+            return PlainTextResponse(content="0")
 
     except:
         raise CustomException(msg="エラー")
