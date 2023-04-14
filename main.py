@@ -46,9 +46,14 @@ async def check_vline(place, order, timediff=0.0):
         min_pos = int(orders[0])
         prv_pos = int(orders[0])
         max_down = 0
+        print(f"max_pos={str(max_pos)}, min_pos={str(min_pos)}, prv_pos={str(prv_pos)}")
         for i in orders[1:]:
             i = int(i)
+            print(f"i: {str(i)}")
             if prv_pos == i:
+                print(
+                    f"max_pos={str(max_pos)}, min_pos={str(min_pos)}, prv_pos={str(prv_pos)}"
+                )
                 continue
             else:
                 if max_pos < i:
@@ -57,13 +62,19 @@ async def check_vline(place, order, timediff=0.0):
                     min_pos = i
                 if prv_pos < i:
                     diff = i - prv_pos
+                    print(f"diff: {str(diff)}")
                     if max_down < diff:
                         max_down = diff
-                    prv_pos = i
+                prv_pos = i
+            print(
+                f"max_pos={str(max_pos)}, min_pos={str(min_pos)}, prv_pos={str(prv_pos)}"
+            )
         final_diff = max_pos - place
-
+        print(
+            f"final_diff={(final_diff)}, max_down={(max_down)}, timediff={str(timediff)}"
+        )
         if final_diff >= 2 and max_down >= 2:
-            if time_threshold <= time_threshold:
+            if timediff <= time_threshold:
                 return PlainTextResponse(content="1")
 
         return PlainTextResponse(content="0")
