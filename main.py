@@ -26,7 +26,7 @@ class HttpRequestMiddleware(BaseHTTPMiddleware):
             response: Response = await call_next(request)
         except Exception as e:
             ce = CustomException(e)
-            response = PlainTextResponse(ce.detail, status_code=ce.status_code)
+            response = PlainTextResponse(content=ce.detail, status_code=ce.status_code)
 
         return response
 
@@ -61,9 +61,9 @@ async def check_vline(place, order):
         final_diff = max_pos - place
 
         if final_diff >= 2 and max_down >= 2:
-            return "Vライン馬"
+            return PlainTextResponse(content="Vライン馬")
         else:
-            return ""
+            return PlainTextResponse(content="ライン馬")
 
     except:
         raise CustomException(msg="エラー")
