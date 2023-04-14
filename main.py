@@ -17,7 +17,7 @@ class CustomException(Exception):
         status_code: int = default_status_code,
     ) -> None:
         self.status_code = status_code
-        self.detail = "エラーが発生しました"
+        self.detail = ""
 
 
 class HttpRequestMiddleware(BaseHTTPMiddleware):
@@ -32,12 +32,14 @@ class HttpRequestMiddleware(BaseHTTPMiddleware):
 
 
 @app.get("/")
-async def check_vline(place, order):
+async def check_vline(place, order, timediff=0.0):
+    time_threshold = 2.0
     if place == "" or order == "":
-        raise CustomException(msg="エラー")
+        raise CustomException(msg="引数エラー")
     try:
         place = int(place)
         order = str(order)
+        timediff = str(timediff)
 
         orders = order.split("-")[-3:]
         max_pos = int(orders[0])
@@ -61,12 +63,13 @@ async def check_vline(place, order):
         final_diff = max_pos - place
 
         if final_diff >= 2 and max_down >= 2:
-            return PlainTextResponse(content="1")
-        else:
-            return PlainTextResponse(content="0")
+            if type(timediff) == "float" & time_threshold <= time_threshold:
+                return PlainTextResponse(content="1")
+
+        return PlainTextResponse(content="0")
 
     except:
-        raise CustomException(msg="エラー")
+        raise CustomException(msg="入力エラー")
 
 
 app.add_middleware(HttpRequestMiddleware)
