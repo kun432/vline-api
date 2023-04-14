@@ -39,7 +39,7 @@ async def check_vline(place, order, timediff=0.0):
     try:
         place = int(place)
         order = str(order)
-        timediff = str(timediff)
+        timediff = float(timediff)
 
         orders = order.split("-")[-3:]
         max_pos = int(orders[0])
