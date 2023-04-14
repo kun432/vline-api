@@ -17,7 +17,7 @@ class CustomException(Exception):
         status_code: int = default_status_code,
     ) -> None:
         self.status_code = status_code
-        self.detail = ""
+        self.detail = "-999"
 
 
 class HttpRequestMiddleware(BaseHTTPMiddleware):
@@ -32,20 +32,19 @@ class HttpRequestMiddleware(BaseHTTPMiddleware):
 
 
 @app.get("/")
-async def check_vline(place, order, timediff=0.0):
-    time_threshold = 2.0
+async def check_vline(place, order):
     if place == "" or order == "":
         raise CustomException(msg="引数エラー")
     try:
         place = int(place)
         order = str(order)
-        timediff = float(timediff)
 
         orders = order.split("-")[-3:]
         max_pos = int(orders[0])
         min_pos = int(orders[0])
         prv_pos = int(orders[0])
         max_down = 0
+        ttl_down = 0
         print(f"max_pos={str(max_pos)}, min_pos={str(min_pos)}, prv_pos={str(prv_pos)}")
         for i in orders[1:]:
             i = int(i)
@@ -65,17 +64,15 @@ async def check_vline(place, order, timediff=0.0):
                     print(f"diff: {str(diff)}")
                     if max_down < diff:
                         max_down = diff
+                    ttl_down += diff
                 prv_pos = i
             print(
                 f"max_pos={str(max_pos)}, min_pos={str(min_pos)}, prv_pos={str(prv_pos)}"
             )
         final_diff = max_pos - place
-        print(
-            f"final_diff={(final_diff)}, max_down={(max_down)}, timediff={str(timediff)}"
-        )
-        if final_diff >= 2 and max_down >= 2:
-            if timediff <= time_threshold:
-                return PlainTextResponse(content="1")
+        print(f"final_diff={(final_diff)}, max_down={(max_down)}")
+        if final_diff >= 2 and (max_down >= 2 or ttl_down >= 2):
+            return PlainTextResponse(content="1")
 
         return PlainTextResponse(content="0")
 
