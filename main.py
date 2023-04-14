@@ -63,7 +63,7 @@ async def check_vline(place, order, timediff=0.0):
         final_diff = max_pos - place
 
         if final_diff >= 2 and max_down >= 2:
-            if type(timediff) == "float" & time_threshold <= time_threshold:
+            if time_threshold <= time_threshold:
                 return PlainTextResponse(content="1")
 
         return PlainTextResponse(content="0")
